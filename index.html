@@ -74,9 +74,11 @@
       videoItem.dataset.index = video.id;
 
       const videoElement = document.createElement('video');
-      videoElement.controls = true;
+      videoElement.muted = true;
+      videoElement.autoplay = true;
+      videoElement.playsInline = true;
+      videoElement.loop = true; // 필요시 비디오 반복
       videoElement.src = video.src;
-      videoElement.play();
 
       videoItem.appendChild(videoElement);
       videoContainer.appendChild(videoItem);
@@ -104,6 +106,7 @@
         const currentVideo = updateVideos();
         videoContainer.scrollTo(0, currentVideoIndex * window.innerHeight);
         reportVideoWatched(currentVideo);
+        playCurrentVideo();
       });
 
       hammer.on('swipedown', () => {
@@ -112,6 +115,19 @@
           const currentVideo = updateVideos();
           videoContainer.scrollTo(0, currentVideoIndex * window.innerHeight);
           reportVideoWatched(currentVideo);
+          playCurrentVideo();
+        }
+      });
+    }
+
+    function playCurrentVideo() {
+      const videoItems = document.querySelectorAll('.video-item');
+      videoItems.forEach((item, index) => {
+        const video = item.querySelector('video');
+        if (index === currentVideoIndex) {
+          video.play();
+        } else {
+          video.pause();
         }
       });
     }
@@ -142,6 +158,7 @@
         loadVideo(video, i);
       }
       setupSwipeHandler();
+      playCurrentVideo();
     });
   </script>
 </body>
