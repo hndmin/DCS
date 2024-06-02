@@ -46,13 +46,8 @@
 </head>
 <body>
   <div id="video-container"></div>
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io-stream/0.9.1/socket.io-stream.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
   <script>
-    const socket = io();
-    const ss = socketioStream;
-
     const videos = [
       { id: 0, src: 'vid/A0.mp4' },
       { id: 1, src: 'vid/A1.mp4' },
@@ -70,7 +65,6 @@
     let watchedVideos = [];
     let recentWatched = [];
     let loadedVideos = [];
-    let videoCache = new Map(); // 비디오 데이터를 캐싱하기 위한 Map 객체
 
     const videoContainer = document.getElementById('video-container');
 
@@ -81,27 +75,8 @@
 
       const videoElement = document.createElement('video');
       videoElement.controls = true;
-
-      if (videoCache.has(video.id)) {
-        // 캐시에 비디오 데이터가 있는 경우
-        videoElement.src = videoCache.get(video.id);
-        videoElement.play();
-      } else {
-        // 캐시에 비디오 데이터가 없는 경우 서버로부터 스트림 요청
-        const stream = ss.createStream();
-        ss(socket).emit('video-request', stream, { videoId: video.id });
-        const chunks = [];
-        stream.on('data', (chunk) => {
-          chunks.push(chunk);
-        });
-        stream.on('end', () => {
-          const blob = new Blob(chunks, { type: 'video/webm' });
-          const videoUrl = URL.createObjectURL(blob);
-          videoCache.set(video.id, videoUrl); // 비디오 데이터를 캐시에 저장
-          videoElement.src = videoUrl;
-          videoElement.play();
-        });
-      }
+      videoElement.src = video.src;
+      videoElement.play();
 
       videoItem.appendChild(videoElement);
       videoContainer.appendChild(videoItem);
@@ -118,7 +93,6 @@
 
     function reportVideoWatched(video) {
       console.log(`Video ID ${video.id} watched`);
-      socket.emit('video watched', { videoId: video.id });
     }
 
     function setupSwipeHandler() {
