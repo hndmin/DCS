@@ -68,7 +68,6 @@
     let watchedVideos = []; /* 시청한 비디오 목록 */
     let recentWatched = []; /* 최근 시청한 비디오 목록 */
     let loadedVideos = []; /* 로드된 비디오 목록 */
-    const videoCache = {}; /* 비디오 캐시 객체 */
 
     const videoContainer = document.getElementById('video-container'); /* 비디오 컨테이너 요소 */
 
@@ -77,18 +76,12 @@
       videoItem.className = 'video-item'; /* 클래스 설정 */
       videoItem.dataset.index = video.id; /* 데이터 인덱스 속성 설정 */
 
-      let videoElement;
-      if (videoCache[video.id]) {
-        videoElement = videoCache[video.id].cloneNode(true); /* 캐시된 비디오 요소 복제 */
-      } else {
-        videoElement = document.createElement('video'); /* 비디오 요소 생성 */
-        videoElement.muted = true; /* 음소거 설정 */
-        videoElement.autoplay = true; /* 자동 재생 설정 */
-        videoElement.playsInline = true; /* 인라인 재생 설정 */
-        videoElement.loop = true; /* 반복 재생 설정 */
-        videoElement.src = video.src; /* 비디오 소스 설정 */
-        videoCache[video.id] = videoElement; /* 캐시에 저장 */
-      }
+      const videoElement = document.createElement('video'); /* 비디오 요소 생성 */
+      videoElement.muted = true; /* 음소거 설정 */
+      videoElement.autoplay = true; /* 자동 재생 설정 */
+      videoElement.playsInline = true; /* 인라인 재생 설정 */
+      videoElement.loop = true; /* 반복 재생 설정 */
+      videoElement.src = video.src; /* 비디오 소스 설정 */
 
       videoItem.appendChild(videoElement); /* 비디오 아이템에 비디오 요소 추가 */
       videoContainer.appendChild(videoItem); /* 비디오 컨테이너에 비디오 아이템 추가 */
@@ -114,10 +107,13 @@
       hammer.get('swipe').set({ direction: Hammer.DIRECTION_VERTICAL }); /* 스와이프 방향 설정 */
 
       hammer.on('swipeup', () => {
+        console.log(currentVideoIndex);
+
         if (currentVideoIndex < loadedVideos.length - 1) {
           currentVideoIndex++;
           playCurrentVideo();
           const currentVideo = loadedVideos[currentVideoIndex];
+          // const currentVideo = loadedVideos[1];
           reportVideoWatched(currentVideo);
         } else {
           const currentVideo = updateVideos();
@@ -125,17 +121,17 @@
           currentVideoIndex = loadedVideos.length - 1;
           playCurrentVideo();
         }
-        setTimeout(preloadNextVideo, 1000); /* 다음 비디오 미리 로드 - 지연을 줘서 중복 방지 */
       }); /* 스와이프 업 이벤트 처리 */
 
       hammer.on('swipedown', () => {
+        console.log(currentVideoIndex);
+
         if (currentVideoIndex > 0) {
           currentVideoIndex--;
           playCurrentVideo();
           const currentVideo = loadedVideos[currentVideoIndex];
           reportVideoWatched(currentVideo);
         }
-        setTimeout(preloadNextVideo, 1000); /* 다음 비디오 미리 로드 - 지연을 줘서 중복 방지 */
       }); /* 스와이프 다운 이벤트 처리 */
     }
 
@@ -154,7 +150,7 @@
 
     function updateVideos() {
       const videoItems = document.querySelectorAll('.video-item');
-      if (videoItems.length > 2) {
+      if (videoItems.length == 2) {
         videoContainer.removeChild(videoItems[0]); /* 가장 오래된 비디오 아이템 제거 */
         loadedVideos.shift(); /* 로드된 비디오 목록에서 제거 */
       }
@@ -169,28 +165,23 @@
       }
       loadVideo(newVideo, currentVideoIndex);
       loadedVideos.push(newVideo); /* 로드된 비디오 목록에 추가 */
+      
 
       return newVideo;
     }
 
-    function preloadNextVideo() {
-      const nextVideo = getRandomVideo();
-      if (!loadedVideos.find(video => video.id === nextVideo.id)) {
-        loadVideo(nextVideo, loadedVideos.length);
-        loadedVideos.push(nextVideo);
-      }
-    }
-
     document.addEventListener('DOMContentLoaded', () => {
+      //console.log("domLoaded");
       for (let i = 0; i < 2; i++) {
         const video = getRandomVideo(); /* 무작위 비디오 선택 */
         loadedVideos.push(video);
         loadVideo(video, i); /* 비디오 로드 */
+        
+        //
         watchedVideos.push(video.id);
       }
       setupSwipeHandler(); /* 스와이프 핸들러 설정 */
       playCurrentVideo(); /* 현재 비디오 재생 */
-      setTimeout(preloadNextVideo, 100); /* 다음 비디오 미리 로드 - 지연을 줘서 중복 방지 */
     });
   </script>
 </body>
