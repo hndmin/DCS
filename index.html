@@ -88,8 +88,10 @@
     }
 
     function getRandomVideo() {
-      let availableVideos = videos.filter(v => !watchedVideos.includes(v.id));
-      if (availableVideos.length === 0) {
+      let availableVideos;
+      if (watchedVideos.length < videos.length) {
+        availableVideos = videos.filter(v => !watchedVideos.includes(v.id));
+      } else {
         availableVideos = videos.filter(v => !recentWatched.includes(v.id));
       }
       let randomVideo = availableVideos[Math.floor(Math.random() * availableVideos.length)];
@@ -105,22 +107,25 @@
       hammer.get('swipe').set({ direction: Hammer.DIRECTION_VERTICAL });
 
       hammer.on('swipeup', () => {
-        currentVideoIndex++;
-        const currentVideo = updateVideos();
-        const currentVideoItem = document.querySelector(`.video-item[data-index="${currentVideo.id}"]`);
-        currentVideoItem.scrollIntoView({ behavior: 'smooth' });
-        reportVideoWatched(currentVideo);
-        playCurrentVideo();
+        if (currentVideoIndex < loadedVideos.length - 1) {
+          currentVideoIndex++;
+          playCurrentVideo();
+          const currentVideo = loadedVideos[currentVideoIndex];
+          reportVideoWatched(currentVideo);
+        } else {
+          const currentVideo = updateVideos();
+          reportVideoWatched(currentVideo);
+          currentVideoIndex = loadedVideos.length - 1;
+          playCurrentVideo();
+        }
       });
 
       hammer.on('swipedown', () => {
         if (currentVideoIndex > 0) {
           currentVideoIndex--;
-          const currentVideo = updateVideos();
-          const currentVideoItem = document.querySelector(`.video-item[data-index="${currentVideo.id}"]`);
-          currentVideoItem.scrollIntoView({ behavior: 'smooth' });
-          reportVideoWatched(currentVideo);
           playCurrentVideo();
+          const currentVideo = loadedVideos[currentVideoIndex];
+          reportVideoWatched(currentVideo);
         }
       });
     }
@@ -130,6 +135,7 @@
       videoItems.forEach((item, index) => {
         const video = item.querySelector('video');
         if (index === currentVideoIndex) {
+          item.scrollIntoView({ behavior: 'smooth' });
           video.play();
         } else {
           video.pause();
@@ -141,6 +147,7 @@
       const videoItems = document.querySelectorAll('.video-item');
       if (videoItems.length > 3) {
         videoContainer.removeChild(videoItems[0]);
+        loadedVideos.shift();
       }
 
       const newVideo = getRandomVideo();
@@ -152,6 +159,7 @@
         recentWatched.shift();
       }
       loadVideo(newVideo, currentVideoIndex);
+      loadedVideos.push(newVideo);
 
       return newVideo;
     }
