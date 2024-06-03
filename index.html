@@ -23,6 +23,9 @@
       flex-direction: column;
       overflow-y: auto;
       scroll-snap-type: y mandatory;
+      scroll-behavior: smooth; /* Smooth scrolling */
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
     }
 
     #video-container::-webkit-scrollbar {
@@ -104,7 +107,8 @@
       hammer.on('swipeup', () => {
         currentVideoIndex++;
         const currentVideo = updateVideos();
-        videoContainer.scrollTo(0, currentVideoIndex * window.innerHeight);
+        const currentVideoItem = document.querySelector(`.video-item[data-index="${currentVideo.id}"]`);
+        currentVideoItem.scrollIntoView({ behavior: 'smooth' });
         reportVideoWatched(currentVideo);
         playCurrentVideo();
       });
@@ -113,7 +117,8 @@
         if (currentVideoIndex > 0) {
           currentVideoIndex--;
           const currentVideo = updateVideos();
-          videoContainer.scrollTo(0, currentVideoIndex * window.innerHeight);
+          const currentVideoItem = document.querySelector(`.video-item[data-index="${currentVideo.id}"]`);
+          currentVideoItem.scrollIntoView({ behavior: 'smooth' });
           reportVideoWatched(currentVideo);
           playCurrentVideo();
         }
