@@ -5,51 +5,51 @@
   <title>Infinity Scroll Videos</title>
   <style>
     body, html {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background-color: #000;
+      margin: 0; /* 기본 마진 제거 */
+      padding: 0; /* 기본 패딩 제거 */
+      overflow: hidden; /* 스크롤바 숨기기 */
+      display: flex; /* 플렉스 레이아웃 사용 */
+      justify-content: center; /* 수평 중앙 정렬 */
+      align-items: center; /* 수직 중앙 정렬 */
+      height: 100vh; /* 뷰포트 높이를 100%로 설정 */
+      background-color: #000; /* 배경색 검정색 */
     }
 
     #video-container {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      overflow-y: auto;
-      scroll-snap-type: y mandatory;
-      scroll-behavior: smooth; /* Smooth scrolling */
-      -ms-overflow-style: none;  /* IE and Edge */
-      scrollbar-width: none;  /* Firefox */
+      width: 100%; /* 너비 100% */
+      height: 100%; /* 높이 100% */
+      position: relative; /* 상대적 위치 지정 */
+      display: flex; /* 플렉스 레이아웃 사용 */
+      flex-direction: column; /* 플렉스 방향을 세로로 설정 */
+      overflow-y: auto; /* 세로 스크롤 사용 */
+      scroll-snap-type: y mandatory; /* 스크롤 스냅을 세로 방향으로 설정 */
+      scroll-behavior: smooth; /* 스크롤을 부드럽게 설정 */
+      -ms-overflow-style: none;  /* IE와 Edge에서 스크롤바 숨기기 */
+      scrollbar-width: none;  /* Firefox에서 스크롤바 숨기기 */
     }
 
     #video-container::-webkit-scrollbar {
-      display: none;  /* Safari and Chrome */
+      display: none;  /* Safari와 Chrome에서 스크롤바 숨기기 */
     }
 
     .video-item {
-      width: 100%;
-      height: 100%;
-      flex-shrink: 0;
-      scroll-snap-align: start;
-      position: relative;
+      width: 100%; /* 너비 100% */
+      height: 100%; /* 높이 100% */
+      flex-shrink: 0; /* 요소 크기 고정 */
+      scroll-snap-align: start; /* 스크롤 스냅을 시작 부분으로 맞춤 */
+      position: relative; /* 상대적 위치 지정 */
     }
 
     video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+      width: 100%; /* 비디오 너비 100% */
+      height: 100%; /* 비디오 높이 100% */
+      object-fit: cover; /* 비디오를 요소 크기에 맞게 조정 */
     }
   </style>
 </head>
 <body>
-  <div id="video-container"></div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+  <div id="video-container"></div> <!-- 비디오 컨테이너 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script> <!-- Hammer.js 라이브러리 로드 -->
   <script>
     const videos = [
       { id: 0, src: 'vid/A0.mp4' },
@@ -61,50 +61,50 @@
       { id: 6, src: 'vid/A6.mp4' },
       { id: 7, src: 'vid/A7.mp4' },
       { id: 8, src: 'vid/A8.mp4' },
-      { id: 9, src: 'vid/A9.mp4' },
-    ];
+      { id: 9, src: 'vid/A9.mp4' }
+    ]; /* 비디오 목록 배열 */
 
-    let currentVideoIndex = 0;
-    let watchedVideos = [];
-    let recentWatched = [];
-    let loadedVideos = [];
+    let currentVideoIndex = 0; /* 현재 비디오 인덱스 */
+    let watchedVideos = []; /* 시청한 비디오 목록 */
+    let recentWatched = []; /* 최근 시청한 비디오 목록 */
+    let loadedVideos = []; /* 로드된 비디오 목록 */
 
-    const videoContainer = document.getElementById('video-container');
+    const videoContainer = document.getElementById('video-container'); /* 비디오 컨테이너 요소 */
 
     function loadVideo(video, index) {
-      const videoItem = document.createElement('div');
-      videoItem.className = 'video-item';
-      videoItem.dataset.index = video.id;
+      const videoItem = document.createElement('div'); /* 비디오 아이템 요소 생성 */
+      videoItem.className = 'video-item'; /* 클래스 설정 */
+      videoItem.dataset.index = video.id; /* 데이터 인덱스 속성 설정 */
 
-      const videoElement = document.createElement('video');
-      videoElement.muted = true;
-      videoElement.autoplay = true;
-      videoElement.playsInline = true;
-      videoElement.loop = true; // 필요시 비디오 반복
-      videoElement.src = video.src;
+      const videoElement = document.createElement('video'); /* 비디오 요소 생성 */
+      videoElement.muted = true; /* 음소거 설정 */
+      videoElement.autoplay = true; /* 자동 재생 설정 */
+      videoElement.playsInline = true; /* 인라인 재생 설정 */
+      videoElement.loop = true; /* 반복 재생 설정 */
+      videoElement.src = video.src; /* 비디오 소스 설정 */
 
-      videoItem.appendChild(videoElement);
-      videoContainer.appendChild(videoItem);
+      videoItem.appendChild(videoElement); /* 비디오 아이템에 비디오 요소 추가 */
+      videoContainer.appendChild(videoItem); /* 비디오 컨테이너에 비디오 아이템 추가 */
     }
 
     function getRandomVideo() {
       let availableVideos;
       if (watchedVideos.length < videos.length) {
-        availableVideos = videos.filter(v => !watchedVideos.includes(v.id));
+        availableVideos = videos.filter(v => !watchedVideos.includes(v.id)); /* 시청하지 않은 비디오 목록 */
       } else {
-        availableVideos = videos.filter(v => !recentWatched.includes(v.id));
+        availableVideos = videos.filter(v => !recentWatched.includes(v.id)); /* 최근 시청한 비디오 제외한 목록 */
       }
-      let randomVideo = availableVideos[Math.floor(Math.random() * availableVideos.length)];
+      let randomVideo = availableVideos[Math.floor(Math.random() * availableVideos.length)]; /* 무작위 비디오 선택 */
       return randomVideo;
     }
 
     function reportVideoWatched(video) {
-      console.log(`Video ID ${video.id} watched`);
+      console.log(`Video ID ${video.id} watched`); /* 시청한 비디오 ID 콘솔 출력 */
     }
 
     function setupSwipeHandler() {
-      const hammer = new Hammer(videoContainer);
-      hammer.get('swipe').set({ direction: Hammer.DIRECTION_VERTICAL });
+      const hammer = new Hammer(videoContainer); /* Hammer.js 인스턴스 생성 */
+      hammer.get('swipe').set({ direction: Hammer.DIRECTION_VERTICAL }); /* 스와이프 방향 설정 */
 
       hammer.on('swipeup', () => {
         if (currentVideoIndex < loadedVideos.length - 1) {
@@ -118,7 +118,7 @@
           currentVideoIndex = loadedVideos.length - 1;
           playCurrentVideo();
         }
-      });
+      }); /* 스와이프 업 이벤트 처리 */
 
       hammer.on('swipedown', () => {
         if (currentVideoIndex > 0) {
@@ -127,18 +127,18 @@
           const currentVideo = loadedVideos[currentVideoIndex];
           reportVideoWatched(currentVideo);
         }
-      });
+      }); /* 스와이프 다운 이벤트 처리 */
     }
 
     function playCurrentVideo() {
-      const videoItems = document.querySelectorAll('.video-item');
+      const videoItems = document.querySelectorAll('.video-item'); /* 모든 비디오 아이템 선택 */
       videoItems.forEach((item, index) => {
         const video = item.querySelector('video');
         if (index === currentVideoIndex) {
-          item.scrollIntoView({ behavior: 'smooth' });
+          item.scrollIntoView({ behavior: 'smooth' }); /* 현재 비디오로 스크롤 */
           video.play();
         } else {
-          video.pause();
+          video.pause(); /* 나머지 비디오 일시정지 */
         }
       });
     }
@@ -146,32 +146,35 @@
     function updateVideos() {
       const videoItems = document.querySelectorAll('.video-item');
       if (videoItems.length > 3) {
-        videoContainer.removeChild(videoItems[0]);
-        loadedVideos.shift();
+        videoContainer.removeChild(videoItems[0]); /* 가장 오래된 비디오 아이템 제거 */
+        loadedVideos.shift(); /* 로드된 비디오 목록에서 제거 */
       }
 
       const newVideo = getRandomVideo();
       if (!watchedVideos.includes(newVideo.id)) {
-        watchedVideos.push(newVideo.id);
+        watchedVideos.push(newVideo.id); /* 시청한 비디오 목록에 추가 */
       }
       recentWatched.push(newVideo.id);
       if (recentWatched.length > 5) {
-        recentWatched.shift();
+        recentWatched.shift(); /* 최근 시청한 비디오 목록 관리 */
       }
       loadVideo(newVideo, currentVideoIndex);
-      loadedVideos.push(newVideo);
+      loadedVideos.push(newVideo); /* 로드된 비디오 목록에 추가 */
 
       return newVideo;
     }
 
     document.addEventListener('DOMContentLoaded', () => {
       for (let i = 0; i < 3; i++) {
-        const video = getRandomVideo();
+        const video = getRandomVideo(); /* 무작위 비디오 선택 */
         loadedVideos.push(video);
-        loadVideo(video, i);
+        loadVideo(video, i); /* 비디오 로드 */
+        
+        //
+        watchedVideos.push(video.id);
       }
-      setupSwipeHandler();
-      playCurrentVideo();
+      setupSwipeHandler(); /* 스와이프 핸들러 설정 */
+      playCurrentVideo(); /* 현재 비디오 재생 */
     });
   </script>
 </body>
