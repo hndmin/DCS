@@ -125,7 +125,7 @@
           currentVideoIndex = loadedVideos.length - 1;
           playCurrentVideo();
         }
-        setTimeout(preloadNextVideo, 1000); /* 다음 비디오 미리 로드 - 지연을 줘서 중복 방지 */
+        setTimeout(preloadNextVideo, 100); /* 다음 비디오 미리 로드 - 지연을 줘서 중복 방지 */
       }); /* 스와이프 업 이벤트 처리 */
 
       hammer.on('swipedown', () => {
@@ -135,7 +135,7 @@
           const currentVideo = loadedVideos[currentVideoIndex];
           reportVideoWatched(currentVideo);
         }
-        setTimeout(preloadNextVideo, 1000); /* 다음 비디오 미리 로드 - 지연을 줘서 중복 방지 */
+        setTimeout(preloadNextVideo, 100); /* 다음 비디오 미리 로드 - 지연을 줘서 중복 방지 */
       }); /* 스와이프 다운 이벤트 처리 */
     }
 
